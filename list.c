@@ -114,12 +114,12 @@ int lt_values(value_t* v1, value_t* v2) {
     return lastV1 == '-' && lastV2 == '-' ? !result : result;
 }
 
-int addValuesTogetherWrap(value_t** out, value_t* v1, value_t* v2, int carry) {
+int add_values_wrap(value_t** out, value_t* v1, value_t* v2, int carry) {
     if (!v1 && !v2 && carry == 0) return 0;
     int v = carry;
     v += v1 ? v1->value - '0' : 0;
     v += v2 ? v2->value - '0' : 0;
-    int NONzero = addValuesTogetherWrap(out, v1 ? v1->next : NULL, v2 ? v2->next : NULL, v / 10);
+    int NONzero = add_values_wrap(out, v1 ? v1->next : NULL, v2 ? v2->next : NULL, v / 10);
     if (NONzero || v != 0) {
         insert_char(out, v % 10 + '0');
         return 1;
@@ -127,7 +127,7 @@ int addValuesTogetherWrap(value_t** out, value_t* v1, value_t* v2, int carry) {
     return NONzero;
 }
 
-int subValuesTogetherWrap(value_t** out, value_t* v1, value_t* v2, int borrow) {
+int sub_values_wrap(value_t** out, value_t* v1, value_t* v2, int borrow) {
     if (!v1 && !v2 && borrow == 0) return 0;
     int dv1 = v1 ? v1->value - '0' : 0;
     int dv2 = v2 ? v2->value - '0' : 0;
@@ -138,7 +138,7 @@ int subValuesTogetherWrap(value_t** out, value_t* v1, value_t* v2, int borrow) {
     } else {
         borrow = 0;
     }
-    int NONzero = subValuesTogetherWrap(out, v1 ? v1->next : NULL, v2 ? v2->next : NULL, v1 || v2 ? borrow : 0);
+    int NONzero = sub_values_wrap(out, v1 ? v1->next : NULL, v2 ? v2->next : NULL, v1 || v2 ? borrow : 0);
     if (NONzero || v != 0) {
         insert_char(out, v % 10 + '0');
         return 1;
@@ -164,7 +164,7 @@ value_t* add_values(value_t* v1, value_t* v2) {
 
     if (negV1 == negV2) {
         if (negV1) insert_char(&out, '-');
-        int NONzero = addValuesTogetherWrap(&out, v1, v2, 0);
+        int NONzero = add_values_wrap(&out, v1, v2, 0);
         if (!NONzero) insert_char(&out, '0');
         return out;
     }
@@ -179,9 +179,9 @@ value_t* add_values(value_t* v1, value_t* v2) {
     }
 
     if (v1Smaller) {
-        subValuesTogetherWrap(&out, v2, v1, 0);
+        sub_values_wrap(&out, v2, v1, 0);
     } else {
-        subValuesTogetherWrap(&out, v1, v2, 0);
+        sub_values_wrap(&out, v1, v2, 0);
     }
     return out;
 }
